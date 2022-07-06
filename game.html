@@ -1,0 +1,264 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <link ref = "spreadsheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/trontastic/jquery-ui.min.css"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+             
+        <style>
+        body{
+            background-color: rgb(255, 255, 255);
+        }
+
+        .navbar{
+            background-color: #4473c4;
+            border: 2px solid  #2f528f;
+            padding: 20px;
+            border-radius: 20px;
+            color: white;
+            /* margin: 20px; */
+        }
+
+        .container{
+            width: 830px;
+            border: 2px solid #2f528f;
+            border-radius: 20px;
+            margin: 10px auto;
+            padding: 10px;
+            height: 73%;
+            position: relative;
+            background-color:#4473c4;
+            /* top: 60px; */
+        }
+        .piece_container{
+            position: relative;
+            width: 406px;
+            height: 406px;
+            border: 1px solid #2f528f;
+            float: left;
+            text-align: center;
+            font-size: 30px;
+            line-height: 400px;
+            background-color:white;
+
+        }
+        .puzzle_container{
+            width: 406px;
+            height: 406px;
+            border: 1px solid #2f528f;
+            float: right;
+            background-color:white;
+
+        }
+        .buttons{
+            position: relative;
+            left: -2%;
+            list-style-type: none;
+            text-align: center;
+            /* display: none; */
+        }
+        .buttons button{
+        width: 200px;
+        border: 2px solid #2f528f;
+        font-size: 30px;
+        border-radius: 5px;
+        padding: 5px;
+        background-color: #4473c4;
+        color: white;
+        /* margin-top: 10px; */
+        }
+
+        .reset{
+            display: none;
+        }
+        .piece{
+            width: 100px;
+            height: 100px;
+            border: 0.5px solid rgba(56, 56, 56, 0.082);
+            float: left;
+            background-image:url(wolf.jpg);
+            background-repeat: no-repeat;
+        }
+
+        .countdown{
+            position: relative;
+            float: right;
+            left: -30px;
+            font-size: 30px;
+            top: -15px;
+        }
+
+        .scoreboard{
+            position: relative;
+            float: left;
+            font-size: 30px;
+            left: 30px;
+            top: -15px;
+        }
+        .formSuccess,.formFail{
+            
+            display: none;
+            
+        }
+        input#scoreHolder{
+        display: none;
+        }
+
+        input#submit{
+            width: 200px;
+            border: 2px solid #2f528f;
+            font-size: 30px;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #4473c4;
+            color: white;
+            }
+            @media screen and (max-width: 1450px){  
+                .container{
+                    height: 73%;
+                }
+            }
+            @media screen and (max-width: 1275px){  
+                .container{
+                    height: 65%;
+                }
+            }
+            @media screen and (max-width: 900px){  
+                .container{
+                    height: 50%;
+                }
+            }
+        </style>
+        <!-- <script> 
+
+            
+            $(document).ready(function(){
+                //create 16 divs using nested loops (pieces)
+                var pieces = createPieces(true);
+                $(".puzzle_container").html(pieces);
+                 //when start button is clicked, shuffle pieces to piece container
+                $(".start").click(function(){
+                    var pieces = $(".puzzle_container div");
+                    pieces.each(function(){
+                        var leftPosition = Math.floor(Math.random()*290) + "px";
+                        var topPosition = Math.floor(Math.random()*290) + "px";
+                        $(this).addClass("draggable").css({
+                            position:"absolute",
+                            left:leftPosition,
+                            top:topPosition
+                        })
+                        $(".piece_container").append($(this));
+                    });
+                    //create grid in puzzle container (empty pieces)
+                    var empty = createPieces(false)
+                    //hide start buttona nd show reset button
+                    $(".puzzle_container").html(empty);
+                    $(this).hide();
+                    $(".reset").show();
+                    implementLogic();
+                }); 
+                //when reset button is clicked
+                $(".reset").click(function(){
+                    var newPieces = createPieces(true);
+                    $(".puzzle_container").html(newPieces);
+                    $(this).hide();
+                    $(".start").show();
+                    $(".piece_container").empty();
+                });
+                function createPieces(withImage){
+                    var rows = 4, cols = 4;
+                    var pieces = "";
+                        //top,left = position of peice
+                        //order = order of peices in grid 
+                    for (var i=0, top=0, order = 0; i<rows; i++, top-=100){
+                        for (var j=0, left=0; j<cols; j++, left-=100,order++){
+                            if (withImage){
+                                pieces += "<div style='background-position:" + left + "px " + top + "px;' class = 'piece' data-order=" + order + "></div>";
+                            }
+                            else{
+                                pieces += "<div style ='background-image:none;' class = 'piece droppable'></div>";
+                            }
+                        }
+                    } return pieces;
+                }
+                //checking if puzzle solved
+                function puzzleSolved(){
+                    if($(".puzzle_container .droppedPiece").length !=16){
+                        return false;
+                    }
+                    //item = each dropped puzzle piece
+                    //order = order of each piece
+                    for(var k=0; k<16; k++){
+                        var item = $(".puzzle_container .droppedPiece:eq(" + k +")");
+                        var order = item.data("order")
+                        //if pieces not in order
+                        if(k!=order){
+                            $(".piece_container").text("try again");
+                            return false;
+                        }
+                    }
+                    $(".piece_container").text("Success")
+                    return true;
+                }
+                //creating draggable and droppable elements
+                function implementLogic(){
+                    $(".draggable").draggable({
+                        revert:"invalid",
+                        start:function(){
+                            if($(this).hasClass("droppedPiece" )){
+                                $(this).removeClass("droppedPiece")
+                                $(this).parent().removeClass("piecePresent")
+                            }
+                        }
+                    });
+                    $(".droppable").droppable({
+                        hoverClass:"ui-state-highlight", //research and fix later  highlighst cells when piece hovers over it
+                        //no overlapping of pieces
+                        accept:function(){
+                            return !$(this).hasClass("piecePresent")
+                        },
+                        //autodrop pieces into place when dragged over grid
+                        drop:function(event,ui){
+                            var draggableElement = ui.draggable;
+                            var droppedOn = $(this);
+                            droppedOn.addClass("piecePresent");
+                            $(draggableElement).addClass("droppedPiece").css({
+                                top:0,
+                                left:0,
+                                position:"relative"
+                            }).appendTo(droppedOn);
+                            puzzleSolved();
+                        }
+                    });
+                }
+            });
+        </script> -->
+    <!-- <link rel="stylesheet" href="game.css"> -->
+    </head>
+    <body>
+        <div class = "navbar">
+            <!-- <ul> -->
+                <div class = "countdown">00:<span id = "time" class = "timer">00</span></div>
+                <div class = "scoreboard">Score: <span id = "score">000</span></div>
+            <!-- </ul> -->
+            
+        </div>
+        <div class = "container">
+            <div class = "puzzle_container"></div>
+            <div class="piece_container"></div>
+        </div>
+        <ul class="buttons">
+            <li><button class="start" onclick="start()">Start</button></li>
+            <li><button class="reset" onclick="resetTimer()">Reset</button></li>
+            <form class = "formSuccess" action="scoreSuccess.php" method="post">
+                <input type="number" id="scoreHolder" name="scoreHolder" value="000">
+                <input type="submit" id="submit" value="Leaderboard">
+            </form>
+            <form class = "formFail" action="scoreFail.php" method="post">
+                <input type="number" id="scoreHolder" name="scoreHolder" value="000">
+                <input type="submit" id="submit" value="Leaderboard">
+            </form>
+        </ul>
+       <script src="game.js"></script>
+       <script src="countdown.js"></script>
+    </body>
+</html>
