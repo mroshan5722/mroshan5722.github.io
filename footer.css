@@ -1,0 +1,20 @@
+.footer {
+    margin-top: 100px;
+    height: 60vh;
+    background-image: url('footer.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.footer .memory {
+    position: relative;
+    top: 400px;
+    left: -70px;
+    font-size: 5em;
+    color: #723b36; 
+    border-radius: 5px;
+    text-align: right;
+    font-family: "Mrs Saint Delafield", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
